@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,31 +5,40 @@
 
 using namespace std;
 
-// Función para aplicar Insertion Sort y contar comparaciones
-unsigned long long insertionSort(vector<int> &arr) {
+
+// Función para aplicar QuickSort y contar comparaciones
+unsigned long long quickSort(vector<int> &arr, int inicio, int fin) {
     unsigned long long contadorComparaciones = 0;
-    int n = arr.size();
-
-    for (int i = 1; i < n; i++) {
-        int aux = arr[i];
-        int marcador = i;
-
-        // Comparar y desplazar elementos
-        while (marcador > 0 && aux < arr[marcador - 1]) {
-            arr[marcador] = arr[marcador - 1];
-            marcador--;
-            contadorComparaciones++;  // Cuenta cada comparación en el while
+    if (inicio < fin) {
+        contadorComparaciones++;
+        int i = inicio, j = fin;
+        int pivot = arr[(inicio + fin) / 2];
+        while (i <= j) {
+            while (arr[i] < pivot) {
+                i++;
+                contadorComparaciones++;
+            }
+            while (arr[j] > pivot) {
+                j--;
+                contadorComparaciones++;
+            }
+            contadorComparaciones++;
+            if (i <= j) {
+                swap(arr[i], arr[j]);
+                i++;
+                j--;
+            }
             contadorComparaciones++;
         }
 
-        // Inserción
-        arr[marcador] = aux;
-        contadorComparaciones++;  // Cuenta la comparación fallida que sale del while
+        // Llamadas recursivas para las dos mitades
+        contadorComparaciones += quickSort(arr, inicio, j);
+        contadorComparaciones += quickSort(arr, i, fin);
     }
-
     return contadorComparaciones;
 }
 
+/*
 // Función para mostrar el array
 void printArray(const vector<int> &arr) {
     for (int num : arr) {
@@ -55,13 +62,13 @@ int main() {
         }
         file.close();
 
-        // Aplicar Insertion Sort
-        unsigned long long cantidadComparaciones = insertionSort(arr);
+        // Aplicar QuickSort
+        unsigned long long cantidadComparaciones = quickSort(arr, 0, arr.size() - 1);
         cout << "Cantidad de comparaciones numeros al Azar: " << cantidadComparaciones << endl;
         // Mostrar el array ordenado
         cout << "Array ordenado: ";
-        // printArray(arr);
-
+//        printArray(arr);
+//
     } else {
         cout << "No se pudo abrir el archivo." << endl;
     }
@@ -78,12 +85,12 @@ int main() {
         }
         file2.close();
 
-        // Aplicar Insertion Sort
-        unsigned long long cantidadComparaciones = insertionSort(arr);
+        // Aplicar QuickSort
+        unsigned long long cantidadComparaciones = quickSort(arr, 0, arr.size() - 1);
         cout << "Cantidad de comparaciones numeros ordenados: " << cantidadComparaciones << endl;
         // Mostrar el array ordenado
         cout << "Array ordenado: ";
-        // printArray(arr);
+//        printArray(arr);
 
     } else {
         cout << "No se pudo abrir el archivo." << endl;
@@ -101,12 +108,12 @@ int main() {
         }
         file3.close();
 
-        // Aplicar Insertion Sort
-        unsigned long long cantidadComparaciones = insertionSort(arr);
+        // Aplicar QuickSort
+        unsigned long long cantidadComparaciones = quickSort(arr, 0, arr.size() - 1);
         cout << "Cantidad de comparaciones numeros en orden inverso: " << cantidadComparaciones << endl;
         // Mostrar el array ordenado
         cout << "Array ordenado: ";
-        // printArray(arr);
+//        printArray(arr);
 
     } else {
         cout << "No se pudo abrir el archivo." << endl;
@@ -115,9 +122,8 @@ int main() {
     return 0;
 }
 
+*/
 
-
-/*
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -137,8 +143,8 @@ struct Partido {
     string competicion;
 };
 
-vector<Partido> leerArchivoCSV(const string& nombreArchivo) {
-    ifstream archivo(nombreArchivo);
+vector<Partido> leerArchivoCSV(const string& Base_Datos_COMA) {
+    ifstream archivo(Base_Datos_COMA);
     vector<Partido> partidos;
     string linea;
 
@@ -170,28 +176,41 @@ vector<Partido> leerArchivoCSV(const string& nombreArchivo) {
     return partidos;
 }
 
-// Algoritmo de Insertion Sort con contador de comparaciones
+// Algoritmo de QuickSort con contador de comparaciones
 template<typename T, typename Comparator>
-unsigned long long insertionSort(vector<T>& arr, Comparator comparar) {
-    int size = arr.size();
-    unsigned long long contadorComparaciones = 0; // Contador de comparaciones
+unsigned long long quickSort(vector<T>& arr, int inicio, int fin, Comparator comparar) {
+    unsigned long long contadorComparaciones = 0;
 
-    for (int i = 1; i < size; i++) {
-        T key = arr[i];
-        int j = i - 1;
+    if (inicio < fin) {
+        contadorComparaciones++;
+        int i = inicio, j = fin;
+        T pivot = arr[(inicio + fin) / 2];
 
-        // Mover los elementos que son mayores que 'key' a una posición adelante
-        while (j >= 0 && comparar(key, arr[j])) {
-            arr[j + 1] = arr[j];
-            j--;
-            contadorComparaciones++; // Incrementar contador de comparaciones
-            contadorComparaciones++;
-        }
-        arr[j + 1] = key;
-        contadorComparaciones++; // Comparación cuando sale del while
+        // Partición
+        do {
+            while (comparar(arr[i], pivot)) {
+                i++;
+                contadorComparaciones++; // Incrementar comparaciones
+            }
+            while (comparar(pivot, arr[j])) {
+                j--;
+                contadorComparaciones++; // Incrementar comparaciones
+            }
+
+            if (i <= j) {
+                swap(arr[i], arr[j]);
+                i++;
+                j--;
+            }
+            contadorComparaciones++; // Comparación para salida del bucle
+        } while (i <= j);
+
+        // Llamadas recursivas
+        contadorComparaciones += quickSort(arr, inicio, j, comparar);
+        contadorComparaciones += quickSort(arr, i, fin, comparar);
     }
 
-    return contadorComparaciones; // Retornar la cantidad de comparaciones
+    return contadorComparaciones; // Retornar cantidad de comparaciones
 }
 
 void imprimirPartidos(const vector<Partido>& partidos) {
@@ -210,8 +229,8 @@ int main() {
         return 1;
     }
 
-    // Ordenar por goles locales usando Insertion Sort
-    unsigned long long condicionales = insertionSort(partidos, [](const Partido& a, const Partido& b) {
+    // Ordenar por goles locales usando QuickSort
+    unsigned long long condicionales = quickSort(partidos, 0, partidos.size() - 1, [](const Partido& a, const Partido& b) {
         return a.golesLocal < b.golesLocal;
     });
 
@@ -219,8 +238,8 @@ int main() {
     cout << "\nCantidad de condicionales:\n" << condicionales << endl;
     // imprimirPartidos(partidos);
 
-    // Ordenar por goles visitantes usando Insertion Sort
-    condicionales = insertionSort(partidos, [](const Partido& a, const Partido& b) {
+    // Ordenar por goles visitantes usando QuickSort
+    condicionales = quickSort(partidos, 0, partidos.size() - 1, [](const Partido& a, const Partido& b) {
         return a.golesVisitante < b.golesVisitante;
     });
 
@@ -231,4 +250,3 @@ int main() {
     return 0;
 }
 
-*/

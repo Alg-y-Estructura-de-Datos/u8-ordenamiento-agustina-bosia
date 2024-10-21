@@ -1,5 +1,4 @@
 
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,26 +6,26 @@
 
 using namespace std;
 
-// Función para aplicar Insertion Sort y contar comparaciones
-unsigned long long insertionSort(vector<int> &arr) {
+// Función para aplicar Shell Sort y contar comparaciones
+unsigned long long shellSort(vector<int> &arr) {
     unsigned long long contadorComparaciones = 0;
     int n = arr.size();
 
-    for (int i = 1; i < n; i++) {
-        int aux = arr[i];
-        int marcador = i;
+    // Comienza con un "gap" (intervalo) grande y lo reduce
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j;
 
-        // Comparar y desplazar elementos
-        while (marcador > 0 && aux < arr[marcador - 1]) {
-            arr[marcador] = arr[marcador - 1];
-            marcador--;
-            contadorComparaciones++;  // Cuenta cada comparación en el while
-            contadorComparaciones++;
+            // Realizar comparaciones en intervalos de "gap"
+            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                arr[j] = arr[j - gap];
+                contadorComparaciones++;  // Cuenta cada comparación exitosa
+            }
+            arr[j] = temp;
+            contadorComparaciones++;  // Cuenta la comparación fallida que sale del ciclo
         }
-
-        // Inserción
-        arr[marcador] = aux;
-        contadorComparaciones++;  // Cuenta la comparación fallida que sale del while
+        contadorComparaciones++;
     }
 
     return contadorComparaciones;
@@ -55,8 +54,8 @@ int main() {
         }
         file.close();
 
-        // Aplicar Insertion Sort
-        unsigned long long cantidadComparaciones = insertionSort(arr);
+        // Aplicar Shell Sort
+        unsigned long long cantidadComparaciones = shellSort(arr);
         cout << "Cantidad de comparaciones numeros al Azar: " << cantidadComparaciones << endl;
         // Mostrar el array ordenado
         cout << "Array ordenado: ";
@@ -78,12 +77,12 @@ int main() {
         }
         file2.close();
 
-        // Aplicar Insertion Sort
-        unsigned long long cantidadComparaciones = insertionSort(arr);
+        // Aplicar Shell Sort
+        unsigned long long cantidadComparaciones = shellSort(arr);
         cout << "Cantidad de comparaciones numeros ordenados: " << cantidadComparaciones << endl;
         // Mostrar el array ordenado
         cout << "Array ordenado: ";
-        // printArray(arr);
+        //printArray(arr);
 
     } else {
         cout << "No se pudo abrir el archivo." << endl;
@@ -101,12 +100,12 @@ int main() {
         }
         file3.close();
 
-        // Aplicar Insertion Sort
-        unsigned long long cantidadComparaciones = insertionSort(arr);
+        // Aplicar Shell Sort
+        unsigned long long cantidadComparaciones = shellSort(arr);
         cout << "Cantidad de comparaciones numeros en orden inverso: " << cantidadComparaciones << endl;
         // Mostrar el array ordenado
         cout << "Array ordenado: ";
-        // printArray(arr);
+        //printArray(arr);
 
     } else {
         cout << "No se pudo abrir el archivo." << endl;
@@ -116,8 +115,7 @@ int main() {
 }
 
 
-
-/*
+/* (descomentar para segunda parte)
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -170,25 +168,28 @@ vector<Partido> leerArchivoCSV(const string& nombreArchivo) {
     return partidos;
 }
 
-// Algoritmo de Insertion Sort con contador de comparaciones
+// Algoritmo de Shell Sort con contador de comparaciones
 template<typename T, typename Comparator>
-unsigned long long insertionSort(vector<T>& arr, Comparator comparar) {
+unsigned long long shellSort(vector<T>& arr, Comparator comparar) {
     int size = arr.size();
     unsigned long long contadorComparaciones = 0; // Contador de comparaciones
 
-    for (int i = 1; i < size; i++) {
-        T key = arr[i];
-        int j = i - 1;
+    // Gap empieza en size/2 y se divide a la mitad en cada iteración
+    for (int gap = size / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < size; i++) {
+            T temp = arr[i];
+            int j;
 
-        // Mover los elementos que son mayores que 'key' a una posición adelante
-        while (j >= 0 && comparar(key, arr[j])) {
-            arr[j + 1] = arr[j];
-            j--;
-            contadorComparaciones++; // Incrementar contador de comparaciones
-            contadorComparaciones++;
+            // Desplazar los elementos ordenados por el gap
+            for (j = i; j >= gap && comparar(temp, arr[j - gap]); j -= gap) {
+                arr[j] = arr[j - gap];
+                contadorComparaciones++; // Incrementar contador de comparaciones
+            }
+
+            arr[j] = temp;
+            contadorComparaciones++; // Comparación final para salida del bucle
         }
-        arr[j + 1] = key;
-        contadorComparaciones++; // Comparación cuando sale del while
+        contadorComparaciones++;
     }
 
     return contadorComparaciones; // Retornar la cantidad de comparaciones
@@ -210,8 +211,8 @@ int main() {
         return 1;
     }
 
-    // Ordenar por goles locales usando Insertion Sort
-    unsigned long long condicionales = insertionSort(partidos, [](const Partido& a, const Partido& b) {
+    // Ordenar por goles locales usando Shell Sort
+    unsigned long long condicionales = shellSort(partidos, [](const Partido& a, const Partido& b) {
         return a.golesLocal < b.golesLocal;
     });
 
@@ -219,8 +220,8 @@ int main() {
     cout << "\nCantidad de condicionales:\n" << condicionales << endl;
     // imprimirPartidos(partidos);
 
-    // Ordenar por goles visitantes usando Insertion Sort
-    condicionales = insertionSort(partidos, [](const Partido& a, const Partido& b) {
+    // Ordenar por goles visitantes usando Shell Sort
+    condicionales = shellSort(partidos, [](const Partido& a, const Partido& b) {
         return a.golesVisitante < b.golesVisitante;
     });
 
@@ -230,5 +231,4 @@ int main() {
 
     return 0;
 }
-
 */
